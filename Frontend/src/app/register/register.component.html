@@ -1,0 +1,16 @@
+<div id="errors"></div>
+<form (ngSubmit)="register()" #registerForm="ngForm">
+  <div class="form-group">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" [(ngModel)]="username" required>
+  </div>
+  <div class="form-group">
+    <label for="display">Display Name:</label>
+    <input type="text" id="display" name="display" [(ngModel)]="display" required>
+  </div>
+  <div class="form-group">
+    <label for="credname">Credential Name:</label>
+    <input type="text" id="credname" name="credname" [(ngModel)]="credname" required>
+  </div>
+  <button type="submit">Submit</button>
+</form>
