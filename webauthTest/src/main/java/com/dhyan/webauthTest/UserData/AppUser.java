@@ -4,6 +4,7 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.UserIdentity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
