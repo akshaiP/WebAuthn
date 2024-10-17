@@ -1,12 +1,12 @@
-<div id="errors"></div>
+<div id="container"></div>
 <form (ngSubmit)="register()" #registerForm="ngForm">
   <div class="form-group">
     <label for="username">Username:</label>
-    <input type="text" id="username" name="username" [(ngModel)]="username" required>
+    <input type="text" id="username" name="username" [(ngModel)]="registerObj.username" required>
   </div>
   <div class="form-group">
     <label for="display">Display Name:</label>
-    <input type="text" id="display" name="display" [(ngModel)]="display" required>
+    <input type="text" id="display" name="display" [(ngModel)]="registerObj.display" required>
   </div>
   <div class="form-group">
     <label for="credname">Credential Name:</label>

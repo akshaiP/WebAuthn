@@ -13,27 +13,27 @@ export class WebauthnService {
     formData.append('username', username);
     formData.append('display', display);
 
-    return this.http.post('/registerauth', formData);
+    return this.http.post('localhost:8080/registerauth', formData);
   }
 
   finishRegistration(credential: any): Observable<any> {
     const formData = new FormData();
     formData.append('credential', JSON.stringify(credential));
 
-    return this.http.post('/finishauth', formData);
+    return this.http.post('localhost:8080/finishauth', formData);
   }
 
   startLogin(username: string): Observable<any> {
     const formData = new FormData();
     formData.append('username', username);
 
-    return this.http.post('/login', formData);
+    return this.http.post('localhost:8080/login', formData);
   }
 
   finishLogin(credential: any): Observable<any> {
     const formData = new FormData();
     formData.append('credential', JSON.stringify(credential));
 
-    return this.http.post('/welcome', formData);
+    return this.http.post('localhost:8080/welcome', formData);
   }
 }

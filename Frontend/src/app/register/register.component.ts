@@ -1,24 +1,39 @@
-import { Component } from '@angular/core';
-import { WebauthnService } from '../Service/webauthn.service';
+import { Component,inject } from '@angular/core';
 import { base64urlToUint8array,uint8arrayToBase64url } from '../Utils/utils';
-import { FormsModule } from '@angular/forms';
-
+import { FormsModule} from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    HttpClientModule
+  ],
+  providers:[HttpClient],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  username: string = '';
-  display: string = '';
+  
+  // private http = inject(HttpClient);
+  private router = inject(Router);
+
+  registerObj:any = {
+    username:'',
+    display:''
+  }
   credname: string = '';
 
-  constructor(private webAuthnService: WebauthnService) {}
+  constructor(private HttpServ:HttpClient) {}
 
   register() {
-    this.webAuthnService.startRegistration(this.username, this.display)
+    const formData = new FormData();
+    formData.append('username', this.registerObj.username);
+    formData.append('display', this.registerObj.display);
+
+    this.HttpServ.post("http://localhost:8080/register", formData)
       .subscribe((credentialCreateJson: any) => {
         const publicKey = {
           ...credentialCreateJson.publicKey,
@@ -47,10 +62,21 @@ export class RegisterComponent {
               clientExtensionResults: publicKeyCredential.getClientExtensionResults()
             };
 
-            this.webAuthnService.finishRegistration(encodedResult)
-              .subscribe(response => {
-                window.location.href = '/login';
-              });
+            const finishAuthFormData = new FormData();
+            finishAuthFormData.append('credential', JSON.stringify(encodedResult));
+            finishAuthFormData.append('username', this.registerObj.username);
+            finishAuthFormData.append('credname', this.credname);
+
+
+            this.HttpServ.post('http://localhost:8080/finishauth', formData)
+            .subscribe({
+              next: (response: any) => {
+                this.router.navigateByUrl("/login");
+              },
+              error: (error) => {
+                console.error('Error during finish registration:', error);
+              }
+            });
           })
           .catch(error => {
             console.error('Error during registration:', error);
