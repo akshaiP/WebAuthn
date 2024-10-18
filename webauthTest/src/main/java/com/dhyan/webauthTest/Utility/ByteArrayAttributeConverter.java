@@ -9,11 +9,11 @@ public class ByteArrayAttributeConverter implements AttributeConverter<ByteArray
 
     @Override
     public byte[] convertToDatabaseColumn(ByteArray attribute) {
-        return new byte[0];
+        return attribute.getBytes();
     }
 
     @Override
     public ByteArray convertToEntityAttribute(byte[] dbData) {
-        return null;
+        return new ByteArray(dbData);
     }
 }

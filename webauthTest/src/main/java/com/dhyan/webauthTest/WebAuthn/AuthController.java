@@ -10,6 +10,7 @@ import com.yubico.webauthn.exception.RegistrationFailedException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,7 @@ public class AuthController {
     }
 
     @ResponseBody
+    @Transactional
     @PostMapping("/register")
     public String newUserRegistration(@RequestParam String username,
                                       @RequestParam String display,
@@ -75,6 +77,7 @@ public class AuthController {
     }
 
     @ResponseBody
+    @Transactional
     @PostMapping("/registerauth")
     public String newAuthRegistration(@RequestParam AppUser user, HttpSession session) {
         AppUser existingUser = service.getUserRepo().findByHandle(user.getHandle());
@@ -98,6 +101,7 @@ public class AuthController {
     }
 
     @ResponseBody
+    @Transactional
     @PostMapping("/finishauth")
     public ModelAndView finishRegisration(@RequestParam String credential,
                                           @RequestParam String username,

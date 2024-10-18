@@ -22,7 +22,6 @@ public class AppUser {
     @Column(nullable = false)
     private String displayName;
 
-    @Lob
     @Column(nullable = false,length = 64)
     private ByteArray handle;
 
