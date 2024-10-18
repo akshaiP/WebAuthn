@@ -2,7 +2,7 @@ import { Component,inject } from '@angular/core';
 import { base64urlToUint8array,uint8arrayToBase64url } from '../Utils/utils';
 import { FormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-register',
@@ -49,6 +49,11 @@ export class RegisterComponent {
           extensions: credentialCreateJson.publicKey.extensions
         };
 
+        if (!navigator.credentials || !navigator.credentials.create) {
+          console.error("WebAuthn API is not supported in this browser.");
+          return;
+        }
+
         navigator.credentials.create({ publicKey })
           .then((publicKeyCredential: any) => {
             const encodedResult = {
@@ -68,7 +73,7 @@ export class RegisterComponent {
             finishAuthFormData.append('credname', this.credname);
 
 
-            this.HttpServ.post('http://localhost:8080/finishauth', formData)
+            this.HttpServ.post('http://localhost:8080/finishauth', finishAuthFormData)
             .subscribe({
               next: (response: any) => {
                 this.router.navigateByUrl("/login");
