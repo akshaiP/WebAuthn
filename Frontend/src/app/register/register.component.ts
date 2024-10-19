@@ -72,10 +72,10 @@ export class RegisterComponent {
             finishAuthFormData.append('username', this.registerObj.username);
             finishAuthFormData.append('credname', this.credname);
 
-
-            this.HttpServ.post('http://localhost:8080/finishauth', finishAuthFormData)
+            this.HttpServ.post('http://localhost:8080/finishauth', finishAuthFormData, { responseType: 'text' })
             .subscribe({
               next: (response: any) => {
+                console.log('Finish registration response:', response);
                 this.router.navigateByUrl("/login");
               },
               error: (error) => {

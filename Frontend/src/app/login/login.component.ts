@@ -1,22 +1,27 @@
-import { Component } from '@angular/core';
-import { WebauthnService } from '../Service/webauthn.service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component,inject } from '@angular/core';
 import { base64urlToUint8array, uint8arrayToBase64url } from '../Utils/utils';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,HttpClientModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
   username: string = '';
 
-  constructor(private webAuthnService: WebauthnService) {}
+  private router = inject(Router);
+
+  constructor(private HttpServ:HttpClient) {}
 
   login() {
-    this.webAuthnService.startLogin(this.username)
+    const formData = new FormData();
+    formData.append('username', this.username);
+    this.HttpServ.post("http://localhost:8080/login", formData)
       .subscribe((credentialGetJson: any) => {
         const publicKey = {
           ...credentialGetJson.publicKey,
@@ -42,9 +47,13 @@ export class LoginComponent {
               clientExtensionResults: publicKeyCredential.getClientExtensionResults()
             };
 
-            this.webAuthnService.finishLogin(encodedResult)
+            const formData = new FormData();
+            formData.append('credential', JSON.stringify(encodedResult));
+            formData.append('username', this.username);
+
+            this.HttpServ.post("http://localhost:8080/welcome", formData)
               .subscribe(response => {
-                window.location.href = '/welcome';
+                this.router.navigateByUrl("/welcome");
               });
           })
           .catch(error => {

@@ -35,7 +35,6 @@ public class Authenticator {
     @Column(nullable = false)
     private Long count;
 
-    @Lob
     @Column(nullable = true)
     private ByteArray aaguid;
 
