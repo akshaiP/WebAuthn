@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,19 +37,18 @@ public class UsersController {
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestBody Users user) {
+    public ResponseEntity<?> login(@RequestBody Users user, HttpServletRequest request) {
         try {
             userService.loginUser(user);
-            Optional<Users> foundUser = userService.getUserByUsername(user.getUsername());
 
-            if (foundUser.isPresent()) {
-                return ResponseEntity.ok().body(Map.of(
-                        "message", "Login successful",
-                        "username", foundUser.get().getUsername(),
-                        "email", foundUser.get().getEmail(),
-                        "role", foundUser.get().getRole()
-                ));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+            if (authentication.isAuthenticated()) {
+
+                HttpSession session = request.getSession();
+                System.out.println("Session ID at login: " + session.getId());
+
+                return ResponseEntity.ok().body(Map.of("message", "Login successful"));
             } else {
                 return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
             }
@@ -57,11 +57,23 @@ public class UsersController {
         }
     }
 
+
     @GetMapping("/api/welcome")
-    public ResponseEntity<String> welcome() {
+    public ResponseEntity<String> welcome(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            System.out.println("Session ID at welcome: " + session.getId());
+        } else {
+            System.out.println("No session found at welcome.");
+        }
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
+        }
         String username = auth.getName();
-        return ResponseEntity.ok("Welcome from backend "+username);
+        return ResponseEntity.ok("Welcome from backend " + username);
     }
 
 }

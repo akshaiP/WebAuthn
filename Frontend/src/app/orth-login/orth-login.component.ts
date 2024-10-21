@@ -19,7 +19,7 @@ export class OrthLoginComponent {
   private router = inject(Router);
 
   constructor(private http: HttpClient, private formBuilder: FormBuilder) {
-    // Initialize the form with validators
+
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]]
@@ -39,12 +39,12 @@ export class OrthLoginComponent {
       password: this.loginForm.value.password
     };
 
-    this.http.post("http://localhost:8080/api/login", loginObj)
+    this.http.post("http://localhost:8080/api/login", loginObj, { withCredentials: true })
     .subscribe(
       (res: any) => {
         this.isLoading = false;
         if (res.message === 'Login successful') {
-          this.router.navigateByUrl('/welcome');
+          this.router.navigateByUrl('/welcome'); 
         } else {
           this.errorMessage = 'Invalid login credentials';
         }

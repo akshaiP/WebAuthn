@@ -10,8 +10,26 @@ import { Router } from '@angular/router';
   styleUrl: './welcome.component.css'
 })
 export class WelcomeComponent {
+  welcomeMessage: string = '';
+
   constructor(private http: HttpClient, private router: Router) {}
 
+  ngOnInit(): void {
+    this.getWelcomeMessage();
+  }
+
+  getWelcomeMessage() {
+    this.http.get('http://localhost:8080/api/welcome', { responseType: 'text', withCredentials: true })
+      .subscribe({
+        next: (message: string) => {
+          this.welcomeMessage = message;
+          console.log('Message received:', message);
+        },
+        error: (error) => {
+          console.error('Failed to get the welcome message', error);
+        }
+      });
+  }
 
   logout() {
     this.http.post('http://localhost:8080/logout', {}, { withCredentials: true ,responseType: 'text' }).subscribe({
