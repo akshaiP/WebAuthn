@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -39,20 +40,20 @@ export class OrthLoginComponent {
       password: this.loginForm.value.password
     };
 
-    this.http.post("http://localhost:8080/api/login", loginObj, { withCredentials: true })
-    .subscribe(
-      (res: any) => {
+    console.log(this.loginForm.value);
+    this.http.post('http://localhost:8080/login', loginObj, { withCredentials: true, responseType: 'json' })
+    .subscribe({
+      next: (res: any) => {
         this.isLoading = false;
-        if (res.message === 'Login successful') {
-          this.router.navigateByUrl('/welcome'); 
-        } else {
-          this.errorMessage = 'Invalid login credentials';
+        if (res.username) {
+          // this.router.navigateByUrl('/welcome');
+          console.log("logged in");
         }
       },
-      error => {
+      error: (error) => {
         this.isLoading = false;
         this.errorMessage = 'Login failed. Please try again.';
       }
-    );
+    });
   }
 }

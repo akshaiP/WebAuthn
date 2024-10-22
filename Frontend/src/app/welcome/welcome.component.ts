@@ -32,14 +32,15 @@ export class WelcomeComponent {
   }
 
   logout() {
-    this.http.post('http://localhost:8080/logout', {}, { withCredentials: true ,responseType: 'text' }).subscribe({
-      next: () => {
-        console.log('Logout successful');
-        this.router.navigate(['/ologin']);  
-      },
-      error: (error) => {
-        console.error('Logout failed', error);
-      }
-    });
+    this.http.post('http://localhost:8080/logout', {}, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          console.log('Logout successful');
+          this.router.navigate(['/ologin']);  
+        },
+        error: (error) => {
+          console.error('Logout failed', error);
+        }
+      });
   }
 }

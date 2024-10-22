@@ -123,12 +123,12 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/login")
+    @GetMapping("/webauthn/login")
     public String loginPage() {
         return "login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/webauthn/login")
     @ResponseBody
     public String startLogin(
             @RequestParam String username

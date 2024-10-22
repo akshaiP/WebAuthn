@@ -2,60 +2,31 @@ package com.dhyan.webauthTest.WebAuthn;
 
 import com.dhyan.webauthTest.Users.Users;
 import com.dhyan.webauthTest.Users.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UsersService {
 
-    @Autowired
-    private UsersRepository usersRepository;
+    private final UsersRepository userRepository;
 
-    @Autowired
-    private AuthenticationManager authManager;
+    private final PasswordEncoder passwordEncoder;
 
-    @Lazy
-    @Autowired
-    private SecurityContextHolderStrategy contextHolderStrategy;
-
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    public void registerUser(Users user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        if (user.getRole() == null) {
-            user.setRole("USER");
-        }
-        usersRepository.save(user);
+    public void registerUser(SignUpDTO request) {
+        Users user = new Users();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setRole(request.getRole());
+        userRepository.save(user);
     }
 
-    public void loginUser(Users user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
-        );
-
-        System.out.println("Authentication successful for user: " + authentication.getName());
-        if (authentication != null && authentication.isAuthenticated()) {
-            System.out.println("Authentication successful for user: " + authentication.getName());
-            // You can also check user authorities if needed
-            authentication.getAuthorities().forEach(authority ->
-                    System.out.println("Granted authority: " + authority.getAuthority())
-            );
-        } else {
-            System.out.println("Authentication failed for user: " + user.getUsername());
-            throw new BadCredentialsException("Invalid username or password");
-        }
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 
-    public Optional<Users> getUserByUsername(String username) {
-        return usersRepository.findByUsername(username);
-    }
 }
