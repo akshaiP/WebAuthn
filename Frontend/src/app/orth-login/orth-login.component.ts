@@ -46,7 +46,7 @@ export class OrthLoginComponent {
       next: (res: any) => {
         this.isLoading = false;
         if (res.username) {
-          // this.router.navigateByUrl('/welcome');
+          this.router.navigateByUrl('/welcome');
           console.log("logged in");
         }
       },

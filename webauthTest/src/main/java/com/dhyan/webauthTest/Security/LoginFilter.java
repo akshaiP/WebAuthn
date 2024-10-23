@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,6 +45,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authentication) throws IOException {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // Manually store the security context in session
+        HttpSession session = request.getSession(true); // create a new session if one doesn't exist
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
 
@@ -51,7 +56,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setId(user.getId());
         userResponseDto.setUsername(user.getUsername());
-        userResponseDto.setPassword(user.getPassword());
 
         String jsonResponse = objectMapper.writeValueAsString(userResponseDto);
         PrintWriter writer = response.getWriter();

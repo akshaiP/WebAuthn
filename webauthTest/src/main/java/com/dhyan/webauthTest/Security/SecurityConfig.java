@@ -60,7 +60,8 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .permitAll())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .sessionFixation().migrateSession()
                         .sessionConcurrency(configurer -> {
                             configurer.maximumSessions(5);
                             configurer.maxSessionsPreventsLogin(true);
