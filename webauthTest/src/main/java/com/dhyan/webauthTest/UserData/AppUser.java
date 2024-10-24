@@ -1,5 +1,6 @@
 package com.dhyan.webauthTest.UserData;
 
+import com.dhyan.webauthTest.Users.Users;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.UserIdentity;
 import jakarta.persistence.*;
@@ -23,6 +24,10 @@ public class AppUser {
 
     @Column(nullable = false,length = 64)
     private ByteArray handle;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private Users users;
 
     public AppUser(UserIdentity user){
         this.handle=user.getId();

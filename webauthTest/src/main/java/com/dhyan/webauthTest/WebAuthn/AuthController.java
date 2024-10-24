@@ -1,6 +1,7 @@
 package com.dhyan.webauthTest.WebAuthn;
 
 import com.dhyan.webauthTest.Authenticator.Authenticator;
+import com.dhyan.webauthTest.Security.WebAuthnAuthenticationToken;
 import com.dhyan.webauthTest.UserData.AppUser;
 import com.dhyan.webauthTest.Utility.Utility;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,8 +9,11 @@ import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -144,12 +148,12 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/welcome")
+    @PostMapping("/webauthn/finishlogin")
     @ResponseBody
     public String finishLogin(
             @RequestParam String credential,
             @RequestParam String username,
-            Model model
+            HttpServletRequest httprequest
     ) {
         try {
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc;
@@ -160,10 +164,17 @@ public class AuthController {
                     .response(pkc)
                     .build());
             if (result.isSuccess()) {
-                model.addAttribute("username", username);
-                return "{\"status\":\"success\", \"message\":\"Login successful\"}";  // Return a JSON response
+                AppUser user = service.getUserRepo().findByUserName(username);
+
+                WebAuthnAuthenticationToken authToken = new WebAuthnAuthenticationToken(user);
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                HttpSession session = httprequest.getSession(true);
+                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+                return "{\"status\":\"success\", \"message\":\"Login successful\"}";
             } else {
-                return "{\"status\":\"failure\", \"message\":\"Login failed\"}";  // Return a failure JSON response
+                return "{\"status\":\"failure\", \"message\":\"Login failed\"}";
             }
         } catch (IOException | AssertionFailedException e) {
             throw new RuntimeException("Authentication failed", e);

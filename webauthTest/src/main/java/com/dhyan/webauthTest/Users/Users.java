@@ -1,5 +1,6 @@
 package com.dhyan.webauthTest.Users;
 
+import com.dhyan.webauthTest.UserData.AppUser;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,9 @@ public class Users implements UserDetails {
 
     @Column(nullable = false)
     private String role;
+
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
+    private AppUser appUser;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

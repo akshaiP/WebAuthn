@@ -46,7 +46,8 @@ export class OrthLoginComponent {
       next: (res: any) => {
         this.isLoading = false;
         if (res.username) {
-          this.router.navigateByUrl('/welcome');
+          localStorage.setItem('username', res.username); 
+          this.router.navigateByUrl('/ask-passkey');
           console.log("logged in");
         }
       },

@@ -36,6 +36,7 @@ export class WelcomeComponent {
       .subscribe({
         next: () => {
           console.log('Logout successful');
+          localStorage.clear();
           this.router.navigate(['/ologin']);  
         },
         error: (error) => {

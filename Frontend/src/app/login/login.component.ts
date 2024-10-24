@@ -21,7 +21,8 @@ export class LoginComponent {
   login() {
     const formData = new FormData();
     formData.append('username', this.username);
-    this.HttpServ.post("http://localhost:8080/login", formData)
+
+    this.HttpServ.post("http://localhost:8080/webauthn/login", formData)
       .subscribe((credentialGetJson: any) => {
         const publicKey = {
           ...credentialGetJson.publicKey,
@@ -47,17 +48,26 @@ export class LoginComponent {
               clientExtensionResults: publicKeyCredential.getClientExtensionResults()
             };
 
-            const formData = new FormData();
-            formData.append('credential', JSON.stringify(encodedResult));
-            formData.append('username', this.username);
+            const loginFormData = new FormData();
+            loginFormData.append('credential', JSON.stringify(encodedResult));
+            loginFormData.append('username', this.username);
 
-            this.HttpServ.post("http://localhost:8080/welcome", formData)
-              .subscribe(response => {
-                this.router.navigateByUrl("/welcome");
+            this.HttpServ.post("http://localhost:8080/webauthn/finishlogin", loginFormData)
+              .subscribe({
+                next: (response: any) => {
+                  if (response.status === 'success') {
+                    this.router.navigateByUrl("/welcome");
+                  } else {
+                    console.error('Login failed:', response.message);
+                  }
+                },
+                error: (error) => {
+                  console.error('Error during login:', error);
+                }
               });
           })
           .catch(error => {
-            console.error('Error during login:', error);
+            console.error('Error during WebAuthn login:', error);
           });
       });
   }

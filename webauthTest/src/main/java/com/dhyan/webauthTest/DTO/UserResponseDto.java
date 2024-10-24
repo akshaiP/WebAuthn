@@ -1,4 +1,4 @@
-package com.dhyan.webauthTest.WebAuthn;
+package com.dhyan.webauthTest.DTO;
 
 import lombok.Data;
 

@@ -1,5 +1,7 @@
 package com.dhyan.webauthTest.WebAuthn;
 
+import com.dhyan.webauthTest.DTO.LoginRequest;
+import com.dhyan.webauthTest.DTO.SignUpDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;

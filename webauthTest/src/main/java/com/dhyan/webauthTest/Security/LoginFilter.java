@@ -1,8 +1,8 @@
 package com.dhyan.webauthTest.Security;
 
 import com.dhyan.webauthTest.Users.Users;
-import com.dhyan.webauthTest.WebAuthn.LoginRequest;
-import com.dhyan.webauthTest.WebAuthn.UserResponseDto;
+import com.dhyan.webauthTest.DTO.LoginRequest;
+import com.dhyan.webauthTest.DTO.UserResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

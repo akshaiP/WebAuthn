@@ -5,6 +5,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { HomeComponent } from './home/home.component';
 import { SignupComponent } from './signup/signup.component';
 import { OrthLoginComponent } from './orth-login/orth-login.component';
+import { AskPasskeyComponent } from './ask-passkey/ask-passkey.component';
 
 export const routes: Routes = [
     { 
@@ -23,6 +24,10 @@ export const routes: Routes = [
     {
         path: 'ologin', 
         component: OrthLoginComponent
+    },
+    {
+        path: 'ask-passkey', 
+        component: AskPasskeyComponent
     },
     {
         path: 'register', 
