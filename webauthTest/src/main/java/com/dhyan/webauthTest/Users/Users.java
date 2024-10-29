@@ -31,7 +31,7 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private String role;
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, optional = false)
     private AppUser appUser;
 
     @Override
@@ -67,5 +67,13 @@ public class Users implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                '}';
     }
 }

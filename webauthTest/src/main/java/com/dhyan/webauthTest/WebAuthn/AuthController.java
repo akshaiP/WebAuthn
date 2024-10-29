@@ -3,6 +3,8 @@ package com.dhyan.webauthTest.WebAuthn;
 import com.dhyan.webauthTest.Authenticator.Authenticator;
 import com.dhyan.webauthTest.Security.WebAuthnAuthenticationToken;
 import com.dhyan.webauthTest.UserData.AppUser;
+import com.dhyan.webauthTest.Users.Users;
+import com.dhyan.webauthTest.Users.UsersRepository;
 import com.dhyan.webauthTest.Utility.Utility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.*;
@@ -10,10 +12,14 @@ import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Controller
@@ -39,6 +46,9 @@ public class AuthController {
         this.relyingParty = relyingPary;
         this.service = service;
     }
+
+    @Autowired
+    UsersRepository usersRepository;
 
     @GetMapping("/")
     public String welcome() {
@@ -56,14 +66,20 @@ public class AuthController {
             @RequestParam String username,
             @RequestParam String display
     ) {
-        AppUser existingUser = service.getUserRepo().findByUserName(username);
-        if (existingUser == null) {
+        Optional<Users> existingUsers = usersRepository.findByUsername(username);
+        if (existingUsers.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        }
+        Users user = existingUsers.get();
+        AppUser appUser = service.getUserRepo().findByUserName(username);
+        if (appUser == null) {
             UserIdentity userIdentity = UserIdentity.builder()
                     .name(username)
                     .displayName(display)
                     .id(Utility.generateRandom(32))
                     .build();
             AppUser saveUser = new AppUser(userIdentity);
+            saveUser.setUsers(user);
             service.getUserRepo().save(saveUser);
             return newAuthRegistration(saveUser);
         } else {
@@ -153,7 +169,8 @@ public class AuthController {
     public String finishLogin(
             @RequestParam String credential,
             @RequestParam String username,
-            HttpServletRequest httprequest
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse
     ) {
         try {
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc;
@@ -164,14 +181,26 @@ public class AuthController {
                     .response(pkc)
                     .build());
             if (result.isSuccess()) {
-                AppUser user = service.getUserRepo().findByUserName(username);
+                AppUser appUser = service.getUserRepo().findByUserName(username);
+                Users user = appUser.getUsers();
 
+                // Authenticate user by setting a WebAuthnAuthenticationToken in the SecurityContext
                 WebAuthnAuthenticationToken authToken = new WebAuthnAuthenticationToken(user);
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                securityContext.setAuthentication(authToken);
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Persist the SecurityContext in the session
+                HttpSession session = httpRequest.getSession(true);
+                session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+                SecurityContextHolder.setContext(securityContext);
 
-                HttpSession session = httprequest.getSession(true);
-                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+                httpResponse.setStatus(HttpServletResponse.SC_OK);
+                httpResponse.setContentType("application/json; charset=UTF-8");
+
+                System.out.println("Session ID: " + httpRequest.getSession().getId());
+                System.out.println("Authentication: " + SecurityContextHolder.getContext().getAuthentication());
+
+
                 return "{\"status\":\"success\", \"message\":\"Login successful\"}";
             } else {
                 return "{\"status\":\"failure\", \"message\":\"Login failed\"}";

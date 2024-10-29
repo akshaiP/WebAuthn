@@ -22,7 +22,7 @@ export class LoginComponent {
     const formData = new FormData();
     formData.append('username', this.username);
 
-    this.HttpServ.post("http://localhost:8080/webauthn/login", formData)
+    this.HttpServ.post("http://localhost:8080/webauthn/login", formData , { withCredentials: true })
       .subscribe((credentialGetJson: any) => {
         const publicKey = {
           ...credentialGetJson.publicKey,
@@ -52,11 +52,12 @@ export class LoginComponent {
             loginFormData.append('credential', JSON.stringify(encodedResult));
             loginFormData.append('username', this.username);
 
-            this.HttpServ.post("http://localhost:8080/webauthn/finishlogin", loginFormData)
-              .subscribe({
+            this.HttpServ.post("http://localhost:8080/webauthn/finishlogin", loginFormData, { withCredentials: true })
+            .subscribe({
                 next: (response: any) => {
                   if (response.status === 'success') {
                     this.router.navigateByUrl("/welcome");
+                    console.log("Logged in");
                   } else {
                     console.error('Login failed:', response.message);
                   }

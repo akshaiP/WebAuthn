@@ -1,15 +1,15 @@
 package com.dhyan.webauthTest.Security;
 
-import com.dhyan.webauthTest.UserData.AppUser;
+import com.dhyan.webauthTest.Users.Users;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class WebAuthnAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final AppUser appUser;
+    private final Users user;
 
-    public WebAuthnAuthenticationToken(AppUser appUser) {
-        super(null);
-        this.appUser = appUser;
+    public WebAuthnAuthenticationToken(Users user) {
+        super(user.getAuthorities());
+        this.user = user;
         setAuthenticated(true);
     }
 
@@ -20,6 +20,6 @@ public class WebAuthnAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return this.appUser;
+        return this.user;
     }
 }

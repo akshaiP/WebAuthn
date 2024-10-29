@@ -1,6 +1,5 @@
 package com.dhyan.webauthTest.Security;
 
-import com.dhyan.webauthTest.UserData.AppUser;
 import com.dhyan.webauthTest.Users.Users;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,10 +22,9 @@ public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
         String username = (String) authentication.getPrincipal();
 
         Users user = (Users) userDetailsService.loadUserByUsername(username);
-        AppUser appUser = user.getAppUser();
 
-        if (appUser != null) {
-            return new WebAuthnAuthenticationToken(appUser);
+        if (user.getAppUser() != null) {
+            return new WebAuthnAuthenticationToken(user);
         }
 
         throw new AuthenticationCredentialsNotFoundException("WebAuthn authentication failed for user " + username);

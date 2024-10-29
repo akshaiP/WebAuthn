@@ -26,7 +26,7 @@ public class AppUser {
     private ByteArray handle;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private Users users;
 
     public AppUser(UserIdentity user){
@@ -41,5 +41,14 @@ public class AppUser {
                 .displayName(getDisplayName())
                 .id(getHandle())
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                '}';
     }
 }
