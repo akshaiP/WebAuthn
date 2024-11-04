@@ -11,9 +11,12 @@ import { Router, RouterModule } from '@angular/router';
 export class HomeComponent {
   private router = inject(Router);
   registerClick(){
-    this.router.navigateByUrl("/register");
+    this.router.navigateByUrl("/signup");
   }
   loginClick(){
     this.router.navigateByUrl("/login");
+  }
+  normalLoginClick(){
+    this.router.navigateByUrl("/ologin");
   }
 }
