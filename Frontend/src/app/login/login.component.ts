@@ -3,11 +3,16 @@ import { Component,inject } from '@angular/core';
 import { base64urlToUint8array, uint8arrayToBase64url } from '../Utils/utils';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule,HttpClientModule],
+  imports: [
+    FormsModule,
+    HttpClientModule,
+    CommonModule
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -16,7 +21,16 @@ export class LoginComponent {
 
   private router = inject(Router);
 
-  constructor(private HttpServ:HttpClient) {}
+  constructor(private HttpServ:HttpClient) {
+  }
+
+  signUpClick(){
+    this.router.navigateByUrl("/signup");
+  }
+
+  normalLoginClick(){
+    this.router.navigateByUrl("/ologin");
+  }
 
   login() {
     const formData = new FormData();

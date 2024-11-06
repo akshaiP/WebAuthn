@@ -37,7 +37,7 @@ export class WelcomeComponent {
         next: () => {
           console.log('Logout successful');
           localStorage.clear();
-          this.router.navigate(['/ologin']);  
+          this.router.navigate(['/login']);  
         },
         error: (error) => {
           console.error('Logout failed', error);

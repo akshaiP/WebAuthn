@@ -1,8 +1,17 @@
-<div id="error"></div>
-<form (ngSubmit)="login()" #loginForm="ngForm">
-  <div class="form-group">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" [(ngModel)]="username" required>
-  </div>
-  <button type="submit">Submit</button>
-</form>
+<div class="login-container">
+  <h2>Login</h2>
+  <form (ngSubmit)="login()" #loginForm="ngForm">
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" [(ngModel)]="username" required>
+      <div *ngIf="!username && loginForm.submitted" class="error-message">
+        Username is required
+      </div>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+
+  <p class="alt-login-option" (click)="normalLoginClick()">Login using Password</p>
+  <button type="button" (click)="signUpClick()">Sign Up</button>
+
+</div>

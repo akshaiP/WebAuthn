@@ -68,7 +68,11 @@ export class AskPasskeyComponent {
 
     this.http.post('https://webauthn.local:8443/finishauth', finishAuthFormData, { responseType: 'text', withCredentials: true })
       .subscribe({
-        next: () => this.router.navigateByUrl("/welcome"),
+        next: () => {
+          localStorage.setItem('webauthnRegistered', 'true');
+          alert('Passkey registration successful!');
+          this.router.navigateByUrl("/welcome");
+        },
         error: (error) => console.error('Error during finish registration:', error)
       });
   }
