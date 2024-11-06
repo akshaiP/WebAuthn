@@ -41,7 +41,7 @@ export class OrthLoginComponent {
     };
 
     console.log(this.loginForm.value);
-    this.http.post('http://localhost:8080/login', loginObj, { withCredentials: true, responseType: 'json' })
+    this.http.post('https://webauthn.local:8443/login', loginObj, { withCredentials: true, responseType: 'json' })
     .subscribe({
       next: (res: any) => {
         this.isLoading = false;

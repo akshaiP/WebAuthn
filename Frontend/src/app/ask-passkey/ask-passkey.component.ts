@@ -21,7 +21,7 @@ export class AskPasskeyComponent {
     const formData = new FormData();
     formData.append('username', this.username);
     formData.append('display', this.username);
-    this.http.post("http://localhost:8080/register",formData, { withCredentials: true })
+    this.http.post("https://webauthn.local:8443/register",formData, { withCredentials: true })
       .subscribe((credentialCreateJson: any) => {
         const publicKey = {
           ...credentialCreateJson.publicKey,
@@ -66,7 +66,7 @@ export class AskPasskeyComponent {
     finishAuthFormData.append('username', this.username);
     finishAuthFormData.append('credname', this.username);
 
-    this.http.post('http://localhost:8080/finishauth', finishAuthFormData, { responseType: 'text', withCredentials: true })
+    this.http.post('https://webauthn.local:8443/finishauth', finishAuthFormData, { responseType: 'text', withCredentials: true })
       .subscribe({
         next: () => this.router.navigateByUrl("/welcome"),
         error: (error) => console.error('Error during finish registration:', error)

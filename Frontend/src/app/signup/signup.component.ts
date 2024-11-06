@@ -30,7 +30,7 @@ export class SignupComponent {
       role: this.role
     };
 
-    this.http.post("http://localhost:8080/auth/signup", formData).subscribe({
+    this.http.post("https://webauthn.local:8443/auth/signup", formData).subscribe({
       next: (response: any) => {
         console.log('Sign up successful', response);
         this.router.navigateByUrl("/login");

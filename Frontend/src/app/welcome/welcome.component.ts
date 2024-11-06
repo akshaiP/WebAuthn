@@ -19,7 +19,7 @@ export class WelcomeComponent {
   }
 
   getWelcomeMessage() {
-    this.http.get('http://localhost:8080/api/welcome', { responseType: 'text', withCredentials: true })
+    this.http.get('https://webauthn.local:8443/api/welcome', { responseType: 'text', withCredentials: true })
       .subscribe({
         next: (message: string) => {
           this.welcomeMessage = message;
@@ -32,7 +32,7 @@ export class WelcomeComponent {
   }
 
   logout() {
-    this.http.post('http://localhost:8080/logout', {}, { withCredentials: true })
+    this.http.post('https://webauthn.local:8443/logout', {}, { withCredentials: true })
       .subscribe({
         next: () => {
           console.log('Logout successful');
