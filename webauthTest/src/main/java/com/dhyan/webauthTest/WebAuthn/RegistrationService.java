@@ -76,4 +76,8 @@ public class RegistrationService implements CredentialRepository {
                                 .build())
                 .collect(Collectors.toSet());
     }
+
+    public boolean isUserRegisteredWithPasskey(String username) {
+        return userRepo.findByUserName(username) != null;
+    }
 }

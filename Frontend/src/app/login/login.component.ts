@@ -70,14 +70,17 @@ export class LoginComponent {
             .subscribe({
                 next: (response: any) => {
                   if (response.status === 'success') {
+                    localStorage.setItem('username',this.username);
                     this.router.navigateByUrl("/welcome");
                     console.log("Logged in");
                   } else {
                     console.error('Login failed:', response.message);
+                    alert(`Login failed: ${response.message}`);
                   }
                 },
                 error: (error) => {
                   console.error('Error during login:', error);
+                  alert('Error during login. Please try again.');
                 }
               });
           })

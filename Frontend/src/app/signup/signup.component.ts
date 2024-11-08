@@ -1,49 +1,63 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component,inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [FormsModule, CommonModule, HttpClientModule],
+  imports: [
+    FormsModule, 
+    CommonModule, 
+    HttpClientModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
 })
 export class SignupComponent {
-  username: string = '';
-  password: string = '';
-  email: string = '';
-  role: string = 'USER'; 
+  signupForm: FormGroup;
   errorMessage: string = '';
-  
+
   private router = inject(Router);
 
-  constructor(private http:HttpClient) {}
+  constructor(private http: HttpClient, private fb: FormBuilder) {
+    this.signupForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      role: ['USER'] 
+    });
+  }
 
   signUp() {
-    const formData = {
-      username: this.username,
-      password: this.password,
-      email: this.email,
-      role: this.role
-    };
+    if (this.signupForm.invalid) {
+      return;
+    }
 
-    this.http.post("https://webauthn.local:8443/auth/signup", formData).subscribe({
-      next: (response: any) => {
-        console.log('Sign up successful', response);
-        this.router.navigateByUrl("/login");
-      },
-      error: (err) => {
-        if (err.status === 409) {
-          this.errorMessage = "Username is already taken!";
-        } else if (err.error) { 
-          this.errorMessage = err.error;
-        } else {
-          this.errorMessage = "Sign up failed. Please try again.";
+    const formData = this.signupForm.value;
+
+    this.http.post("https://webauthn.local:8443/auth/signup", formData, { responseType: 'json' })
+      .subscribe({
+        next: (res: any) => {
+          if (res.message === "User registered successfully") {
+            alert("Sign up Success!!");
+            this.router.navigateByUrl('ologin')
+            .then(navigated => {
+              console.log('Navigation successful:', navigated);
+            }).catch(err => {
+              console.error('Navigation error:', err);
+            });
+          } else {
+            alert(res.message); 
+          }
+        },
+        error: (err: any) => {
+          const errorMessage = err.error?.message || 'An error occurred. Please try again.';
+          console.error('Error during registration:', err);
+          alert(errorMessage);
         }
-      }
-    });
+      });
   }
 }

@@ -4,6 +4,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { SignupComponent } from './signup/signup.component';
 import { OrthLoginComponent } from './orth-login/orth-login.component';
 import { AskPasskeyComponent } from './ask-passkey/ask-passkey.component';
+import { authGuard } from './authguard/auth.guard';
 
 export const routes: Routes = [
     { 
@@ -21,7 +22,8 @@ export const routes: Routes = [
     },
     {
         path: 'ask-passkey', 
-        component: AskPasskeyComponent
+        component: AskPasskeyComponent,
+        canActivate: [authGuard] 
     },
     {
         path: 'login', 
@@ -29,6 +31,7 @@ export const routes: Routes = [
     },
     {
         path: 'welcome', 
-        component: WelcomeComponent
+        component: WelcomeComponent,
+        canActivate: [authGuard] 
     }
 ];

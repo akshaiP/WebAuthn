@@ -64,12 +64,10 @@ export class AskPasskeyComponent {
     const finishAuthFormData = new FormData();
     finishAuthFormData.append('credential', JSON.stringify(credentialResult));
     finishAuthFormData.append('username', this.username);
-    finishAuthFormData.append('credname', this.username);
 
     this.http.post('https://webauthn.local:8443/finishauth', finishAuthFormData, { responseType: 'text', withCredentials: true })
       .subscribe({
         next: () => {
-          localStorage.setItem('webauthnRegistered', 'true');
           alert('Passkey registration successful!');
           this.router.navigateByUrl("/welcome");
         },

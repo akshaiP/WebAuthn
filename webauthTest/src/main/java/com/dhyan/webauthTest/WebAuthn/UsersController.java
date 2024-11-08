@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class UsersController {
@@ -24,12 +26,20 @@ public class UsersController {
     UsersService userService;
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<?> signup(@RequestBody SignUpDTO signupRequest) {
+    public ResponseEntity<Map<String, String>> signup(@RequestBody SignUpDTO signupRequest) {
+        Map<String, String> response = new HashMap<>();
         if (userService.existsByUsername(signupRequest.getUsername())) {
-            return ResponseEntity.badRequest().body("Username is already taken");
+            response.put("message", "Username is already taken");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
-        userService.registerUser(signupRequest);
-        return ResponseEntity.ok("User registered successfully");
+        try {
+            userService.registerUser(signupRequest);
+            response.put("message", "User registered successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "An error occurred during registration.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @PostMapping("/login")

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -50,15 +51,7 @@ public class AuthController {
     @Autowired
     UsersRepository usersRepository;
 
-    @GetMapping("/")
-    public String welcome() {
-        return "index";
-    }
-
-    @GetMapping("/register")
-    public String registerUser(Model model) {
-        return "register";
-    }
+    private Map<String, AppUser> registrationSessions = new HashMap<>();
 
     @PostMapping("/register")
     @ResponseBody
@@ -80,8 +73,8 @@ public class AuthController {
                     .build();
             AppUser saveUser = new AppUser(userIdentity);
             saveUser.setUsers(user);
-            service.getUserRepo().save(saveUser);
-            return newAuthRegistration(saveUser);
+            registrationSessions.put(username, saveUser);
+            return newAuthRegistration(username);
         } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + username + " already exists. Choose a new name.");
         }
@@ -90,10 +83,10 @@ public class AuthController {
     @PostMapping("/registerauth")
     @ResponseBody
     public String newAuthRegistration(
-            @RequestParam AppUser user
+            @RequestParam String username
     ) {
-        AppUser existingUser = service.getUserRepo().findByHandle(user.getHandle());
-        if (existingUser != null) {
+        AppUser user = registrationSessions.get(username);
+        if (user != null) {
             UserIdentity userIdentity = user.toUserIdentity();
             StartRegistrationOptions registrationOptions = StartRegistrationOptions.builder()
                     .user(userIdentity)
@@ -115,11 +108,13 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<String> finishRegisration(
             @RequestParam String credential,
-            @RequestParam String username,
-            @RequestParam String credname
+            @RequestParam String username
     ) {
         try {
-            AppUser user = service.getUserRepo().findByUserName(username);
+            AppUser user = registrationSessions.get(username);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User session not found. Please register again.");
+            }
 
             PublicKeyCredentialCreationOptions requestOptions = this.requestOptionMap.get(username);
             if (requestOptions != null) {
@@ -130,8 +125,12 @@ public class AuthController {
                         .response(pkc)
                         .build();
                 RegistrationResult result = relyingParty.finishRegistration(options);
-                Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, credname);
+                service.getUserRepo().save(user);
+                Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, username);
                 service.getAuthRepository().save(savedAuth);
+
+                registrationSessions.remove(username);
+                requestOptionMap.remove(username);
                 return ResponseEntity.ok("Registration successful");
             } else {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cached request expired. Try to register again!");
@@ -208,6 +207,12 @@ public class AuthController {
         } catch (IOException | AssertionFailedException e) {
             throw new RuntimeException("Authentication failed", e);
         }
+    }
 
+    @GetMapping("/checkPasskeyRegistration")
+    @ResponseBody
+    public Map<String, Boolean> checkPasskeyRegistration(@RequestParam String username) {
+        boolean isRegistered = service.isUserRegisteredWithPasskey(username);
+        return Collections.singletonMap("registered", isRegistered);
     }
 }

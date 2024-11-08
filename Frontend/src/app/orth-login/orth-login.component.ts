@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -18,6 +17,7 @@ export class OrthLoginComponent {
   errorMessage = '';
 
   private router = inject(Router);
+  private readonly PASSKEY_PROMPTED = 'passkeyPrompted';
 
   constructor(private http: HttpClient, private formBuilder: FormBuilder) {
 
@@ -40,15 +40,27 @@ export class OrthLoginComponent {
       password: this.loginForm.value.password
     };
 
-    console.log(this.loginForm.value);
     this.http.post('https://webauthn.local:8443/login', loginObj, { withCredentials: true, responseType: 'json' })
     .subscribe({
       next: (res: any) => {
         this.isLoading = false;
         if (res.username) {
-           localStorage.setItem('username', res.username); 
-          this.router.navigateByUrl('/ask-passkey');
-          console.log("logged in");
+          localStorage.setItem('username', res.username);
+
+          this.http.get(`https://webauthn.local:8443/checkPasskeyRegistration?username=${res.username}`, { withCredentials: true })
+            .subscribe((checkRes: any) => {
+              if (checkRes.registered) {
+                this.router.navigateByUrl('/welcome');
+              } 
+              else {
+                if (this.hasPromptedForPasskey(res.username)) {
+                  this.router.navigateByUrl('/welcome');
+                } else {
+                  this.addUsernameToPromptedSet(res.username);
+                  this.router.navigateByUrl('/ask-passkey');
+                }                
+              }
+            });
         }
       },
       error: (error) => {
@@ -56,5 +68,16 @@ export class OrthLoginComponent {
         this.errorMessage = 'Login failed. Please try again.';
       }
     });
+  }
+
+  addUsernameToPromptedSet(username: string) {
+    const promptedSet = new Set(JSON.parse(localStorage.getItem(this.PASSKEY_PROMPTED) || '[]'));
+    promptedSet.add(username);
+    localStorage.setItem(this.PASSKEY_PROMPTED, JSON.stringify(Array.from(promptedSet)));
+  }
+  
+  hasPromptedForPasskey(username: string): boolean {
+    const promptedSet = new Set(JSON.parse(localStorage.getItem(this.PASSKEY_PROMPTED) || '[]'));
+    return promptedSet.has(username);
   }
 }

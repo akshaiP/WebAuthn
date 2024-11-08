@@ -36,12 +36,16 @@ export class WelcomeComponent {
       .subscribe({
         next: () => {
           console.log('Logout successful');
-          localStorage.clear();
+          localStorage.removeItem("username");
           this.router.navigate(['/login']);  
         },
         error: (error) => {
           console.error('Logout failed', error);
         }
       });
+  }
+
+  registerPasskey(){
+    this.router.navigate(['/ask-passkey']);
   }
 }
