@@ -13,4 +13,5 @@ public interface AuthenticatorRepository extends JpaRepository<Authenticator,Lon
     Optional<Authenticator> findByCredentialId(ByteArray credentialId);
     List<Authenticator> findAllByUser (AppUser user);
     List<Authenticator> findAllByCredentialId(ByteArray credentialId);
+    boolean existsByCredentialId(ByteArray credentialId);
 }

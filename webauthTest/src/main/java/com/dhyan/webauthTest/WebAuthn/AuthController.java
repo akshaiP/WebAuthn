@@ -56,8 +56,7 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseBody
     public String newUserRegistration(
-            @RequestParam String username,
-            @RequestParam String display
+            @RequestParam String username
     ) {
         Optional<Users> existingUsers = usersRepository.findByUsername(username);
         if (existingUsers.isEmpty()) {
@@ -68,16 +67,16 @@ public class AuthController {
         if (appUser == null) {
             UserIdentity userIdentity = UserIdentity.builder()
                     .name(username)
-                    .displayName(display)
+                    .displayName(username)
                     .id(Utility.generateRandom(32))
                     .build();
             AppUser saveUser = new AppUser(userIdentity);
             saveUser.setUsers(user);
             registrationSessions.put(username, saveUser);
-            return newAuthRegistration(username);
         } else {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username " + username + " already exists. Choose a new name.");
+            registrationSessions.put(username, appUser);
         }
+        return newAuthRegistration(username);
     }
 
     @PostMapping("/registerauth")
@@ -108,7 +107,8 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<String> finishRegisration(
             @RequestParam String credential,
-            @RequestParam String username
+            @RequestParam String username,
+            @RequestParam String deviceDetails
     ) {
         try {
             AppUser user = registrationSessions.get(username);
@@ -117,34 +117,39 @@ public class AuthController {
             }
 
             PublicKeyCredentialCreationOptions requestOptions = this.requestOptionMap.get(username);
-            if (requestOptions != null) {
-                PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
-                        PublicKeyCredential.parseRegistrationResponseJson(credential);
-                FinishRegistrationOptions options = FinishRegistrationOptions.builder()
-                        .request(requestOptions)
-                        .response(pkc)
-                        .build();
-                RegistrationResult result = relyingParty.finishRegistration(options);
-                service.getUserRepo().save(user);
-                Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, username);
-                service.getAuthRepository().save(savedAuth);
-
-                registrationSessions.remove(username);
-                requestOptionMap.remove(username);
-                return ResponseEntity.ok("Registration successful");
-            } else {
+            if (requestOptions == null) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cached request expired. Try to register again!");
             }
-        } catch (RegistrationFailedException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Registration failed.", e);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to save credenital, please try again!", e);
-        }
-    }
 
-    @GetMapping("/webauthn/login")
-    public String loginPage() {
-        return "login";
+            PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
+                    PublicKeyCredential.parseRegistrationResponseJson(credential);
+            FinishRegistrationOptions options = FinishRegistrationOptions.builder()
+                    .request(requestOptions)
+                    .response(pkc)
+                    .build();
+
+            RegistrationResult result = relyingParty.finishRegistration(options);
+
+            if (service.getAuthRepository().existsByCredentialId(result.getKeyId().getId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Device already registered for this user.");
+            }
+
+            if (service.getUserRepo().findByUserName(username) == null) {
+                service.getUserRepo().save(user);
+            }
+
+            Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, username);
+            service.getAuthRepository().save(savedAuth);
+
+            return ResponseEntity.ok("Registration successful");
+        } catch (RegistrationFailedException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration failed. Please check the request and try again.", e);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to save credential, please try again!", e);
+        } finally {
+            registrationSessions.remove(username);
+            requestOptionMap.remove(username);
+        }
     }
 
     @PostMapping("/webauthn/login")

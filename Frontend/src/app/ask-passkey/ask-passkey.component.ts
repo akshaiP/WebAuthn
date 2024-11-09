@@ -61,18 +61,32 @@ export class AskPasskeyComponent {
   }
 
   finishPasskeyRegistration(credentialResult: any) {
+    const deviceDetails = this.getDeviceDetails();
+    
     const finishAuthFormData = new FormData();
     finishAuthFormData.append('credential', JSON.stringify(credentialResult));
     finishAuthFormData.append('username', this.username);
+    finishAuthFormData.append('deviceDetails', JSON.stringify(deviceDetails));
 
     this.http.post('https://webauthn.local:8443/finishauth', finishAuthFormData, { responseType: 'text', withCredentials: true })
       .subscribe({
         next: () => {
-          alert('Passkey registration successful!');
           this.router.navigateByUrl("/welcome");
         },
         error: (error) => console.error('Error during finish registration:', error)
       });
+  }
+
+  getDeviceDetails() {
+    const deviceInfo = navigator.platform;
+    const datetime = new Date().toISOString();
+    console.log("Device Info:", deviceInfo);
+    console.log("Date & Time:", datetime);
+    
+    return {
+      deviceInfo,
+      datetime
+    };
   }
 
   skipPasskey() {
