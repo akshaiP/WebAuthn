@@ -5,6 +5,7 @@ import { SignupComponent } from './signup/signup.component';
 import { OrthLoginComponent } from './orth-login/orth-login.component';
 import { AskPasskeyComponent } from './ask-passkey/ask-passkey.component';
 import { authGuard } from './authguard/auth.guard';
+import { DeviceListComponent } from './device-list/device-list.component';
 
 export const routes: Routes = [
     { 
@@ -23,6 +24,11 @@ export const routes: Routes = [
     {
         path: 'ask-passkey', 
         component: AskPasskeyComponent,
+        canActivate: [authGuard] 
+    },
+    {
+        path: 'devices', 
+        component: DeviceListComponent,
         canActivate: [authGuard] 
     },
     {

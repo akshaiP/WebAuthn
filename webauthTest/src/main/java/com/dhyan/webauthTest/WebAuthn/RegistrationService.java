@@ -2,6 +2,7 @@ package com.dhyan.webauthTest.WebAuthn;
 
 import com.dhyan.webauthTest.Authenticator.Authenticator;
 import com.dhyan.webauthTest.Authenticator.AuthenticatorRepository;
+import com.dhyan.webauthTest.DTO.DeviceDTO;
 import com.dhyan.webauthTest.UserData.AppUser;
 import com.dhyan.webauthTest.UserData.UserRepository;
 import com.yubico.webauthn.CredentialRepository;
@@ -10,7 +11,9 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -80,4 +83,26 @@ public class RegistrationService implements CredentialRepository {
     public boolean isUserRegisteredWithPasskey(String username) {
         return userRepo.findByUserName(username) != null;
     }
+
+    public List<DeviceDTO> getUserDevices(String username) {
+        AppUser user = userRepo.findByUserName(username);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+        }
+        return authRepository.findAllByUser(user).stream()
+                .map(authenticator -> new DeviceDTO(
+                        authenticator.getId(),
+                        authenticator.getDeviceLabel(),
+                        authenticator.getDateTime()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public void deleteDevice(Long id, String username) {
+        Authenticator device = authRepository.findById(id)
+                .filter(auth -> auth.getUser().getUserName().equals(username))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found for this user."));
+        authRepository.delete(device);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.dhyan.webauthTest.WebAuthn;
 
 import com.dhyan.webauthTest.Authenticator.Authenticator;
+import com.dhyan.webauthTest.DTO.DeviceDTO;
 import com.dhyan.webauthTest.Security.WebAuthnAuthenticationToken;
 import com.dhyan.webauthTest.UserData.AppUser;
 import com.dhyan.webauthTest.Users.Users;
@@ -22,17 +23,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @Controller
@@ -138,7 +135,10 @@ public class AuthController {
                 service.getUserRepo().save(user);
             }
 
-            Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, username);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            String formattedDateTime = LocalDateTime.now().format(formatter);
+
+            Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, deviceDetails,formattedDateTime);
             service.getAuthRepository().save(savedAuth);
 
             return ResponseEntity.ok("Registration successful");
@@ -220,4 +220,18 @@ public class AuthController {
         boolean isRegistered = service.isUserRegisteredWithPasskey(username);
         return Collections.singletonMap("registered", isRegistered);
     }
+
+    @GetMapping("/devices")
+    @ResponseBody
+    public List<DeviceDTO> getUserDevices(@RequestParam String username) {
+        return service.getUserDevices(username);
+    }
+
+    @DeleteMapping("/device/{id}")
+    public ResponseEntity<String> deleteDevice(@PathVariable Long id, @RequestParam String username) {
+        service.deleteDevice(id, username);
+        return ResponseEntity.ok("Device deleted successfully");
+    }
+
+
 }

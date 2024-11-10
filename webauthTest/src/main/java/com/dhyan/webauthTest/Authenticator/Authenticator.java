@@ -20,8 +20,8 @@ public class Authenticator {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
-    private String name;
+    @Column(nullable = false)
+    private String deviceLabel;
 
     @Column(nullable = false)
     private ByteArray credentialId;
@@ -38,10 +38,14 @@ public class Authenticator {
     @Column(nullable = true)
     private ByteArray aaguid;
 
+    @Column(nullable = true)
+    private String dateTime;
+
     public Authenticator(RegistrationResult result,
                          AuthenticatorAttestationResponse response,
                          AppUser user,
-                         String name){
+                         String deviceLabel,
+                         String dateTime){
         Optional<AttestedCredentialData> attestationData = response.getAttestation()
                 .getAuthenticatorData()
                 .getAttestedCredentialData();
@@ -50,7 +54,8 @@ public class Authenticator {
         this.publicKey=result.getPublicKeyCose();
         attestationData.ifPresent(data -> this.aaguid = data.getAaguid());
         this.count=result.getSignatureCount();
-        this.name=name;
+        this.deviceLabel=deviceLabel;
         this.user=user;
+        this.dateTime = dateTime;
     }
 }

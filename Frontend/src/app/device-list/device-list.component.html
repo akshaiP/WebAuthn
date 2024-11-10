@@ -1,0 +1,16 @@
+<div class="device-list-container">
+    <h2>Registered Devices</h2>
+    <ul *ngIf="devices.length > 0; else noDevices">
+      <li *ngFor="let device of devices" class="device-item">
+        <div class="device-info">
+          <p class="device-label">{{ device.deviceLabel }}</p>
+          <p class="device-date">Registered on: {{ device.dateTime }}</p>
+        </div>
+        <button (click)="deleteDevice(device.id)" class="delete-btn">Delete</button>
+      </li>
+    </ul>
+    <ng-template #noDevices>
+      <p>No registered devices found.</p>
+    </ng-template>
+  </div>
+  
