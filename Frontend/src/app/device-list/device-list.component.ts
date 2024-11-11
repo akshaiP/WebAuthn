@@ -24,7 +24,7 @@ export class DeviceListComponent implements OnInit{
     this.loadDevices();
   }
 
-  // Fetch user devices from the backend
+
   loadDevices(): void {
     this.http.get<Device[]>(`https://webauthn.local:8443/devices?username=${this.username}`, {withCredentials:true}).subscribe({
       next: (devices) => {
@@ -47,6 +47,28 @@ export class DeviceListComponent implements OnInit{
         error: (error) => console.error('Error deleting device', error)
       });
     }
+  }
+
+  logout() {
+    this.http.post('https://webauthn.local:8443/logout', {}, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          console.log('Logout successful');
+          localStorage.removeItem("username");
+          this.router.navigate(['/login']);  
+        },
+        error: (error) => {
+          console.error('Logout failed', error);
+        }
+      });
+  }
+
+  registerPasskey(){
+    this.router.navigate(['/ask-passkey']);
+  }
+
+  trustedDevices(){
+    this.router.navigate(['/devices']);
   }
   
 }

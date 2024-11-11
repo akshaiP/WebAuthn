@@ -48,4 +48,8 @@ export class WelcomeComponent {
   registerPasskey(){
     this.router.navigate(['/ask-passkey']);
   }
+
+  trustedDevices(){
+    this.router.navigate(['/devices']);
+  }
 }

@@ -1,16 +1,39 @@
-<div class="device-list-container">
-    <h2>Registered Devices</h2>
-    <ul *ngIf="devices.length > 0; else noDevices">
-      <li *ngFor="let device of devices" class="device-item">
-        <div class="device-info">
-          <p class="device-label">{{ device.deviceLabel }}</p>
-          <p class="device-date">Registered on: {{ device.dateTime }}</p>
+<section class="vh-100 d-flex flex-column bg-light">
+  <!-- Navigation bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Home</a>
+      <button class="btn btn-danger ms-auto me-2" (click)="logout()">Logout</button>
+
+      <!-- Account dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          Account
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" (click)="registerPasskey()">Register Passkey</a></li>
+          <li><a class="dropdown-item" (click)="trustedDevices()">Trusted Devices</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Registered Devices List -->
+  <div class="device-list-container container my-5">
+    <h2 class="text-center mb-4">Registered Devices</h2>
+    
+    <ul *ngIf="devices.length > 0; else noDevices" class="list-group">
+      <li *ngFor="let device of devices" class="list-group-item d-flex justify-content-between align-items-center mb-3 shadow-sm p-3">
+        <div>
+          <p class="fw-bold mb-1">{{ device.deviceLabel }}</p>
+          <p class="text-muted mb-0">Registered at: {{ device.dateTime }}</p>
         </div>
-        <button (click)="deleteDevice(device.id)" class="delete-btn">Delete</button>
+        <button (click)="deleteDevice(device.id)" class="btn btn-outline-danger btn-sm">Remove</button>
       </li>
     </ul>
+    
     <ng-template #noDevices>
-      <p>No registered devices found.</p>
+      <p class="text-center text-muted">No registered devices found.</p>
     </ng-template>
   </div>
-  
+</section>
