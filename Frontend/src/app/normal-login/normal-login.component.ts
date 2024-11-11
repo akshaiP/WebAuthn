@@ -3,8 +3,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { ToastrService} from 'ngx-toastr';
+import { ToastrModule } from 'ngx-toastr';
 
 @Component({
   selector: 'app-orth-login',
@@ -14,9 +14,8 @@ import { ToastModule } from 'primeng/toast';
     ReactiveFormsModule, 
     CommonModule, 
     HttpClientModule,
-    ToastModule
+    ToastrModule
   ],
-  providers: [MessageService],
   templateUrl: './normal-login.component.html',
   styleUrl: './normal-login.component.css'
 })
@@ -28,7 +27,7 @@ export class NormalLoginComponent {
   private router = inject(Router);
   private readonly PASSKEY_PROMPTED = 'passkeyPrompted';
 
-  constructor(private http: HttpClient, private formBuilder: FormBuilder,private messageService: MessageService) {
+  constructor(private http: HttpClient, private formBuilder: FormBuilder,private toastr: ToastrService) {
 
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
@@ -53,15 +52,16 @@ export class NormalLoginComponent {
     .subscribe({
       next: (res: any) => {
         this.isLoading = false;
+        this.toastr.success('Login Successful', 'You have logged in successfully.');
+        this.toastr.success('Login successfully!!');
+
         if (res.username) {
           localStorage.setItem('username', res.username);
-          this.showToast('success', 'Login Successful', 'You have logged in successfully.');
 
           this.http.get(`https://webauthn.local:8443/checkPasskeyRegistration?username=${res.username}`, { withCredentials: true })
             .subscribe((checkRes: any) => {
               if (checkRes.registered) {
                 this.router.navigateByUrl('/welcome');
-                this.showToast('success', 'Success', 'Login Success !!');
               } 
               else {
                 if (this.hasPromptedForPasskey(res.username)) {
@@ -77,6 +77,7 @@ export class NormalLoginComponent {
       error: (error) => {
         this.isLoading = false;
         this.errorMessage = 'Login failed. Please try again.';
+        this.toastr.error('Login failed', 'Please try again.');
       }
     });
   }
@@ -90,9 +91,5 @@ export class NormalLoginComponent {
   hasPromptedForPasskey(username: string): boolean {
     const promptedSet = new Set(JSON.parse(localStorage.getItem(this.PASSKEY_PROMPTED) || '[]'));
     return promptedSet.has(username);
-  }
-
-  showToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity, summary, detail });
   }
 }
