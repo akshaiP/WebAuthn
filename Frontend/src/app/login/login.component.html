@@ -1,17 +1,78 @@
-<div class="login-container">
-  <h2>Login</h2>
-  <form (ngSubmit)="login()" #loginForm="ngForm">
-    <div class="form-group">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" [(ngModel)]="username" required>
-      <div *ngIf="!username && loginForm.submitted" class="error-message">
-        Username is required
-      </div>
-    </div>
-    <button type="submit">Login</button>
-  </form>
+<section class="login-container bg-light p-3 p-md-4 p-xl-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-xxl-11">
+        <div class="card border-light-subtle shadow-sm">
+          <div class="row g-0">
+            <div class="col-12 col-md-6">
+              <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlWKKc6q0QAI0yMasSvpEu_0sGNj9aR88Kcw&s" alt="Welcome back you've been missed!">
+            </div>
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
+              <div class="col-12 col-lg-11 col-xl-10">
+                <div class="card-body p-3 p-md-4 p-xl-5">
+                  <div class="text-center mb-4">
+                    <a href="#!">
+                      <img src="https://www.dhyan.com/wp-content/uploads/2022/04/Dhyan-Logo2_Apr18.png" alt="Logo" width="175" height="57">
+                    </a>
+                  </div>
+                  <h4 class="text-center">Welcome back you've been missed!</h4>
+                  
+                  <!-- Social login option -->
+                      <!-- Sign Up Button -->
+                      <div class="col-12">
+                        <div class="d-grid">
+                          <button type="button" (click)="normalLoginClick()" class="btn btn-dark btn-lg">
+                            Sign Up with Password
+                          </button>
+                        </div>
+                      </div>
+                  <p class="text-center mt-4 mb-4">Or sign in with Passkey</p>
 
-  <p class="alt-login-option" (click)="normalLoginClick()">Login using Password</p>
-  <button type="button" (click)="signUpClick()">Sign Up</button>
+                  <!-- Login Form -->
+                  <form (ngSubmit)="login()" #loginForm="ngForm">
+                    <div class="row gy-3 overflow-hidden">
+                      
+                      <!-- Username Field -->
+                      <div class="col-12">
+                        <div class="form-floating mb-3">
+                          <input type="text" id="username" name="username" [(ngModel)]="username" class="form-control" placeholder="Username" required />
+                          <label for="username" class="form-label">Username</label>
+                          <div *ngIf="!username && loginForm.submitted" class="text-danger">
+                            Username is required
+                          </div>
+                        </div>
+                      </div>
 
-</div>
+                      <!-- Spacer to replace 'Remember Me' checkbox -->
+                      <div class="col-12" style="height: 20px;"></div>
+
+                      <!-- Login Button -->
+                      <div class="col-12">
+                        <div class="d-grid">
+                          <button type="submit" [disabled]="loginForm.invalid" class="btn btn-dark btn-lg">
+                            Login
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Sign Up Button -->
+                      <div class="col-12">
+                        <div class="d-grid">
+                          <button type="button" (click)="signUpClick()" class="btn btn-dark btn-lg">
+                            Sign Up
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </form>
+
+                </div> <!-- End of card-body -->
+              </div> <!-- End of inner col -->
+            </div> <!-- End of col-md-6 -->
+          </div> <!-- End of row g-0 -->
+        </div> <!-- End of card -->
+      </div> <!-- End of col-xxl-11 -->
+    </div> <!-- End of row justify-content-center -->
+  </div> <!-- End of container -->
+</section>
