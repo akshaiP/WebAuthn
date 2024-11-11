@@ -29,7 +29,7 @@ export class LoginComponent {
   }
 
   normalLoginClick(){
-    this.router.navigateByUrl("/ologin");
+    this.router.navigateByUrl("/normal-login");
   }
 
   login() {
@@ -66,7 +66,7 @@ export class LoginComponent {
             loginFormData.append('credential', JSON.stringify(encodedResult));
             loginFormData.append('username', this.username);
 
-            this.HttpServ.post("https://webauthn.local:8443/webauthn/finishlogin", loginFormData, { withCredentials: true })
+            this.HttpServ.post("https://webauthn.local:8443/webauthn/finish-login", loginFormData, { withCredentials: true })
             .subscribe({
                 next: (response: any) => {
                   if (response.status === 'success') {

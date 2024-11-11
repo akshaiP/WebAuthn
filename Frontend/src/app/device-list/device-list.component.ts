@@ -41,7 +41,6 @@ export class DeviceListComponent implements OnInit{
     if (confirm('Are you sure you want to delete this device?')) {
       this.http.delete(`https://webauthn.local:8443/device/${id}?username=${this.username}`, {withCredentials: true, responseType: 'text' }).subscribe({
         next: (response: string) => {
-          alert(response);  
           this.devices = this.devices.filter(device => device.id !== id);
         },
         error: (error) => console.error('Error deleting device', error)

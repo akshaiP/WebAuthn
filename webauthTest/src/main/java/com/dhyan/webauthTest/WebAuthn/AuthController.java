@@ -55,11 +55,8 @@ public class AuthController {
     public String newUserRegistration(
             @RequestParam String username
     ) {
-        Optional<Users> existingUsers = usersRepository.findByUsername(username);
-        if (existingUsers.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
-        }
-        Users user = existingUsers.get();
+        Users user = usersRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         AppUser appUser = service.getUserRepo().findByUserName(username);
         if (appUser == null) {
             UserIdentity userIdentity = UserIdentity.builder()
@@ -76,7 +73,7 @@ public class AuthController {
         return newAuthRegistration(username);
     }
 
-    @PostMapping("/registerauth")
+    @PostMapping("/register-auth")
     @ResponseBody
     public String newAuthRegistration(
             @RequestParam String username
@@ -100,7 +97,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/finishauth")
+    @PostMapping("/finish-auth")
     @ResponseBody
     public ResponseEntity<String> finishRegisration(
             @RequestParam String credential,
@@ -168,7 +165,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/webauthn/finishlogin")
+    @PostMapping("/webauthn/finish-login")
     @ResponseBody
     public String finishLogin(
             @RequestParam String credential,
@@ -188,12 +185,10 @@ public class AuthController {
                 AppUser appUser = service.getUserRepo().findByUserName(username);
                 Users user = appUser.getUsers();
 
-                // Authenticate user by setting a WebAuthnAuthenticationToken in the SecurityContext
                 WebAuthnAuthenticationToken authToken = new WebAuthnAuthenticationToken(user);
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 securityContext.setAuthentication(authToken);
 
-                // Persist the SecurityContext in the session
                 HttpSession session = httpRequest.getSession(true);
                 session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
                 SecurityContextHolder.setContext(securityContext);

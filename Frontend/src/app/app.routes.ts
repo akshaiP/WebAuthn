@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { SignupComponent } from './signup/signup.component';
-import { OrthLoginComponent } from './orth-login/orth-login.component';
+import { NormalLoginComponent } from './normal-login/normal-login.component';
 import { AskPasskeyComponent } from './ask-passkey/ask-passkey.component';
 import { authGuard } from './authguard/auth.guard';
 import { DeviceListComponent } from './device-list/device-list.component';
@@ -18,8 +18,8 @@ export const routes: Routes = [
         component: SignupComponent
     },
     {
-        path: 'ologin', 
-        component: OrthLoginComponent
+        path: 'normal-login', 
+        component: NormalLoginComponent
     },
     {
         path: 'ask-passkey', 

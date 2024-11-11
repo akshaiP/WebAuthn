@@ -67,7 +67,7 @@ export class AskPasskeyComponent {
     finishAuthFormData.append('username', this.username);
     finishAuthFormData.append('deviceDetails', navigator.platform);
 
-    this.http.post('https://webauthn.local:8443/finishauth', finishAuthFormData, { responseType: 'text', withCredentials: true })
+    this.http.post('https://webauthn.local:8443/finish-auth', finishAuthFormData, { responseType: 'text', withCredentials: true })
       .subscribe({
         next: () => {
           this.router.navigateByUrl("/welcome");

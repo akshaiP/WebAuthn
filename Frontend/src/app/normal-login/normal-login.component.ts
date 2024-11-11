@@ -3,15 +3,24 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-orth-login',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CommonModule, HttpClientModule],
-  templateUrl: './orth-login.component.html',
-  styleUrl: './orth-login.component.css'
+  imports: [
+    FormsModule,
+    ReactiveFormsModule, 
+    CommonModule, 
+    HttpClientModule,
+    ToastModule
+  ],
+  providers: [MessageService],
+  templateUrl: './normal-login.component.html',
+  styleUrl: './normal-login.component.css'
 })
-export class OrthLoginComponent {
+export class NormalLoginComponent {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage = '';
@@ -19,7 +28,7 @@ export class OrthLoginComponent {
   private router = inject(Router);
   private readonly PASSKEY_PROMPTED = 'passkeyPrompted';
 
-  constructor(private http: HttpClient, private formBuilder: FormBuilder) {
+  constructor(private http: HttpClient, private formBuilder: FormBuilder,private messageService: MessageService) {
 
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required]],
@@ -46,11 +55,13 @@ export class OrthLoginComponent {
         this.isLoading = false;
         if (res.username) {
           localStorage.setItem('username', res.username);
+          this.showToast('success', 'Login Successful', 'You have logged in successfully.');
 
           this.http.get(`https://webauthn.local:8443/checkPasskeyRegistration?username=${res.username}`, { withCredentials: true })
             .subscribe((checkRes: any) => {
               if (checkRes.registered) {
                 this.router.navigateByUrl('/welcome');
+                this.showToast('success', 'Success', 'Login Success !!');
               } 
               else {
                 if (this.hasPromptedForPasskey(res.username)) {
@@ -79,5 +90,9 @@ export class OrthLoginComponent {
   hasPromptedForPasskey(username: string): boolean {
     const promptedSet = new Set(JSON.parse(localStorage.getItem(this.PASSKEY_PROMPTED) || '[]'));
     return promptedSet.has(username);
+  }
+
+  showToast(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity, summary, detail });
   }
 }

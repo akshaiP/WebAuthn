@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OrthLoginComponent } from './orth-login.component';
+import { NormalLoginComponent } from './normal-login.component';
 
 describe('OrthLoginComponent', () => {
-  let component: OrthLoginComponent;
-  let fixture: ComponentFixture<OrthLoginComponent>;
+  let component: NormalLoginComponent;
+  let fixture: ComponentFixture<NormalLoginComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OrthLoginComponent]
+      imports: [NormalLoginComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OrthLoginComponent);
+    fixture = TestBed.createComponent(NormalLoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
