@@ -77,7 +77,7 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated");
         }
         String username = auth.getName();
-        return ResponseEntity.ok("Welcome from backend " + username);
+        return ResponseEntity.ok("Welcome " + username);
     }
 
 }

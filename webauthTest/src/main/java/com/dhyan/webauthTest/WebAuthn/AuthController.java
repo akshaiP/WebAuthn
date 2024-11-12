@@ -2,6 +2,7 @@ package com.dhyan.webauthTest.WebAuthn;
 
 import com.dhyan.webauthTest.Authenticator.Authenticator;
 import com.dhyan.webauthTest.DTO.DeviceDTO;
+import com.dhyan.webauthTest.DTO.WebauthLoginResponse;
 import com.dhyan.webauthTest.Security.WebAuthnAuthenticationToken;
 import com.dhyan.webauthTest.UserData.AppUser;
 import com.dhyan.webauthTest.Users.Users;
@@ -167,7 +168,7 @@ public class AuthController {
 
     @PostMapping("/webauthn/finish-login")
     @ResponseBody
-    public String finishLogin(
+    public ResponseEntity<WebauthLoginResponse> finishLogin(
             @RequestParam String credential,
             @RequestParam String username,
             HttpServletRequest httpRequest,
@@ -200,12 +201,13 @@ public class AuthController {
                 System.out.println("Authentication: " + SecurityContextHolder.getContext().getAuthentication());
 
 
-                return "{\"status\":\"success\", \"message\":\"Login successful\"}";
+                return ResponseEntity.ok(new WebauthLoginResponse("success", "Login successful"));
             } else {
-                return "{\"status\":\"failure\", \"message\":\"Login failed\"}";
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new WebauthLoginResponse("failure", "Login failed"));
             }
         } catch (IOException | AssertionFailedException e) {
-            throw new RuntimeException("Authentication failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new WebauthLoginResponse("error", "Authentication failed"));
         }
     }
 

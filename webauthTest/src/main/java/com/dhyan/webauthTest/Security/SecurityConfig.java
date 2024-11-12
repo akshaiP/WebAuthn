@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
-                authorize.requestMatchers("/login", "/auth/signup","/webauthn/login","/webauthn/finishlogin").permitAll()
+                authorize.requestMatchers("/login", "/auth/signup","/webauthn/login","/webauthn/finish-login").permitAll()
                         .anyRequest().authenticated())
                 .addFilter(loginFilter)
                 .logout(logout -> logout.
@@ -55,10 +55,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .sessionFixation().migrateSession()
-                        .sessionConcurrency(configurer -> {
-                            configurer.maximumSessions(5);
-                            configurer.maxSessionsPreventsLogin(true);
-                        })
                 )
                 .httpBasic(withDefaults())
                 .exceptionHandling(exception -> exception
