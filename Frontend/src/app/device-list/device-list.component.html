@@ -1,22 +1,23 @@
 <section class="vh-100 d-flex flex-column bg-light">
-  <!-- Navigation bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Home</a>
-      <button class="btn btn-danger ms-auto me-2" (click)="logout()">Logout</button>
+    <!-- Toolbar at the top -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Home</a>
 
-      <!-- Account dropdown -->
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          Account
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li><a class="dropdown-item" (click)="registerPasskey()">Register Passkey</a></li>
-          <li><a class="dropdown-item" (click)="trustedDevices()">Trusted Devices</a></li>
-        </ul>
-      </div>
+    <!-- Account dropdown, now next to Home -->
+    <div class="dropdown ms-3">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        Account
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="userDropdown">
+        <li><a class="dropdown-item" (click)="registerPasskey()">Register Passkey</a></li>
+        <li><a class="dropdown-item" (click)="trustedDevices()">Trusted devices</a></li>
+      </ul>
     </div>
-  </nav>
+
+    <button class="btn btn-danger ms-auto me-2" (click)="logout()">Logout</button>
+  </div>
+</nav>
 
   <!-- Registered Devices List -->
   <div class="device-list-container container my-5">

@@ -3,6 +3,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component,inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { ToastrModule } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -11,7 +13,8 @@ import { Router } from '@angular/router';
     FormsModule, 
     CommonModule, 
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToastrModule
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css'
@@ -22,7 +25,7 @@ export class SignupComponent {
 
   private router = inject(Router);
 
-  constructor(private http: HttpClient, private fb: FormBuilder) {
+  constructor(private http: HttpClient, private fb: FormBuilder,private toastr: ToastrService) {
     this.signupForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
@@ -42,21 +45,21 @@ export class SignupComponent {
       .subscribe({
         next: (res: any) => {
           if (res.message === "User registered successfully") {
-            alert("Sign up Success!!");
-            this.router.navigateByUrl('ologin')
+            this.toastr.success('Sign up successful!', 'Success');
+            this.router.navigateByUrl('normal-login')
             .then(navigated => {
               console.log('Navigation successful:', navigated);
             }).catch(err => {
               console.error('Navigation error:', err);
             });
           } else {
-            alert(res.message); 
+            this.toastr.error(res.message, 'Sign Up Failed');
           }
         },
         error: (err: any) => {
           const errorMessage = err.error?.message || 'An error occurred. Please try again.';
           console.error('Error during registration:', err);
-          alert(errorMessage);
+          this.toastr.error(errorMessage, 'Sign Up Error');
         }
       });
   }

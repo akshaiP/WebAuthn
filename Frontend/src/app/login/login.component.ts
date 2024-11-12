@@ -4,6 +4,8 @@ import { base64urlToUint8array, uint8arrayToBase64url } from '../Utils/utils';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
+import { ToastrModule } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +13,8 @@ import { CommonModule } from '@angular/common';
   imports: [
     FormsModule,
     HttpClientModule,
-    CommonModule
+    CommonModule,
+    ToastrModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -21,7 +24,7 @@ export class LoginComponent {
 
   private router = inject(Router);
 
-  constructor(private HttpServ:HttpClient) {
+  constructor(private HttpServ:HttpClient,private toastr: ToastrService) {
   }
 
   signUpClick(){
@@ -72,20 +75,22 @@ export class LoginComponent {
                   if (response.status === 'success') {
                     localStorage.setItem('username',this.username);
                     this.router.navigateByUrl("/welcome");
+                    this.toastr.success('Login successful', 'Welcome!');
                     console.log("Logged in");
                   } else {
                     console.error('Login failed:', response.message);
-                    alert(`Login failed: ${response.message}`);
+                    this.toastr.error(`Login failed: ${response.message}`, 'Error');
                   }
                 },
                 error: (error) => {
                   console.error('Error during login:', error);
-                  alert('Error during login. Please try again.');
+                  this.toastr.error('Error during login. Please try again.', 'Login Error');
                 }
               });
           })
           .catch(error => {
             console.error('Error during WebAuthn login:', error);
+            this.toastr.error('Passkey login failed. Please try again.', 'Error');
           });
       });
   }

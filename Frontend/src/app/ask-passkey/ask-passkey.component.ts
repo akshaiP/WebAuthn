@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { base64urlToUint8array, uint8arrayToBase64url } from '../Utils/utils';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { ToastrModule } from 'ngx-toastr';
 
 @Component({
   selector: 'app-ask-passkey',
   standalone: true,
-  imports: [HttpClientModule],
+  imports: [HttpClientModule,ToastrModule],
   templateUrl: './ask-passkey.component.html',
   styleUrl: './ask-passkey.component.css'
 })
@@ -14,7 +16,7 @@ export class AskPasskeyComponent {
 
   username: string = localStorage.getItem('username') || ''; 
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private toastr: ToastrService) {}
 
   registerPasskey() {
 
@@ -70,13 +72,18 @@ export class AskPasskeyComponent {
     this.http.post('https://webauthn.local:8443/finish-auth', finishAuthFormData, { responseType: 'text', withCredentials: true })
       .subscribe({
         next: () => {
+          this.toastr.success('Passkey registration completed successfully.', 'Registration Complete');
           this.router.navigateByUrl("/welcome");
         },
-        error: (error) => console.error('Error during finish registration:', error)
+        error: (error) =>{
+          console.error('Error during finish registration:', error);
+          this.toastr.error('Failed to complete passkey registration. Please try again.', 'Error');
+        } 
       });
   }
 
   skipPasskey() {
+    this.toastr.info('Passkey registration skipped.', 'Notice');
     this.router.navigateByUrl("/welcome");
   }
 

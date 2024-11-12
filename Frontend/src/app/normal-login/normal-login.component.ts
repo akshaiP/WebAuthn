@@ -3,7 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastrService} from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { ToastrModule } from 'ngx-toastr';
 
 @Component({
@@ -52,9 +52,7 @@ export class NormalLoginComponent {
     .subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        this.toastr.success('Login Successful', 'You have logged in successfully.');
-        this.toastr.success('Login successfully!!');
-
+        this.toastr.success('Success', 'Login Success!');
         if (res.username) {
           localStorage.setItem('username', res.username);
 
@@ -69,6 +67,7 @@ export class NormalLoginComponent {
                 } else {
                   this.addUsernameToPromptedSet(res.username);
                   this.router.navigateByUrl('/ask-passkey');
+                  this.toastr.info('Please consider registering a passkey for secure login.', 'Passkey Registration');
                 }                
               }
             });
@@ -77,7 +76,7 @@ export class NormalLoginComponent {
       error: (error) => {
         this.isLoading = false;
         this.errorMessage = 'Login failed. Please try again.';
-        this.toastr.error('Login failed', 'Please try again.');
+        this.toastr.error('Login failed. Please try again.', 'Error');
       }
     });
   }
@@ -92,4 +91,5 @@ export class NormalLoginComponent {
     const promptedSet = new Set(JSON.parse(localStorage.getItem(this.PASSKEY_PROMPTED) || '[]'));
     return promptedSet.has(username);
   }
+
 }
