@@ -57,7 +57,6 @@ public class UsersController {
         long creationTime = session.getCreationTime();
         Date creationDate = new Date(creationTime);
 
-        // Format the date to a readable string
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dateFormat.format(creationDate);
     }

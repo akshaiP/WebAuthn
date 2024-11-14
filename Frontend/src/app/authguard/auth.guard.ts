@@ -5,9 +5,9 @@ export const authGuard: CanActivateFn = (route, state) => {
   const isLoggedIn = !!localStorage.getItem('username');
 
   if (!isLoggedIn) {
-    const router = inject(Router);  // Inject Router
-    router.navigate(['/login']);    // Redirect to login if not authenticated
-    return false;                   // Deny access
+    const router = inject(Router); 
+    router.navigate(['/login']);   
+    return false;                  
   }
   return true;
 };

@@ -45,8 +45,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authentication) throws IOException {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Manually store the security context in session
-        HttpSession session = request.getSession(true); // create a new session if one doesn't exist
+        HttpSession session = request.getSession(true);
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
         response.setStatus(HttpServletResponse.SC_OK);
