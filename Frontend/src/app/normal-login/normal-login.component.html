@@ -17,11 +17,9 @@
                     </a>
                   </div>
 
-                  <!-- Login Form -->
                   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
                     <div class="row gy-3 overflow-hidden">
 
-                      <!-- Username Field -->
                       <div class="col-12">
                         <div class="form-floating mb-3">
                           <input type="text" id="username" formControlName="username" class="form-control" placeholder="Username" required />
@@ -32,7 +30,6 @@
                         </div>
                       </div>
 
-                      <!-- Password Field -->
                       <div class="col-12">
                         <div class="form-floating mb-3">
                           <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password" required />
@@ -43,7 +40,6 @@
                         </div>
                       </div>
 
-                      <!-- Login Button -->
                       <div class="col-12">
                         <div class="d-grid">
                           <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn btn-dark btn-lg">
@@ -52,12 +48,10 @@
                         </div>
                       </div>
 
-                      <!-- Loading Spinner -->
                       <div class="col-12" *ngIf="isLoading" class="spinner text-center text-muted small">
                         Logging in...
                       </div>
 
-                      <!-- Error Message -->
                       <div class="col-12" *ngIf="errorMessage" class="alert alert-danger mt-2">
                         {{ errorMessage }}
                       </div>

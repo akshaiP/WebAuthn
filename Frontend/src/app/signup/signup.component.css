@@ -1,7 +1,7 @@
 .login-container {
-  min-height: 100vh; /* Set a minimum height for the section */
+  min-height: 100vh;
   display: flex;
-  align-items: center; /* Center content vertically */
+  align-items: center;
 }
 
 .container {

@@ -15,9 +15,7 @@
                       <img src="assets/dhyan.png" alt="Logo" width="175" height="57">
                     </a>
                   </div>
-                  
-                  <!-- Social login option -->
-                      <!-- Sign Up Button -->
+
                       <div class="col-12">
                         <div class="d-grid">
                           <button type="button" (click)="normalLoginClick()" class="btn btn-dark btn-lg">
@@ -27,11 +25,9 @@
                       </div>
                   <p class="text-center mt-4 mb-4">Or Sign in with Passkey</p>
 
-                  <!-- Login Form -->
                   <form (ngSubmit)="login()" #loginForm="ngForm">
                     <div class="row gy-3 overflow-hidden">
                       
-                      <!-- Username Field -->
                       <div class="col-12">
                         <div class="form-floating mb-3">
                           <input type="text" id="username" name="username" [(ngModel)]="username" class="form-control" placeholder="Username" required />
@@ -42,10 +38,8 @@
                         </div>
                       </div>
 
-                      <!-- Spacer to replace 'Remember Me' checkbox -->
                       <div class="col-12" style="height: 20px;"></div>
 
-                      <!-- Login Button -->
                       <div class="col-12">
                         <div class="d-grid">
                           <button type="submit" [disabled]="loginForm.invalid" class="btn btn-dark btn-lg">
@@ -54,7 +48,6 @@
                         </div>
                       </div>
 
-                      <!-- Sign Up Button -->
                       <div class="col-12">
                         <div class="d-grid">
                           <button type="button" (click)="signUpClick()" class="btn btn-dark btn-lg">
